@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { Configuration, OpenAIApi } from "openai";
 
-const apiKey = process.env.AZURE_OPENAI_KEY;
+const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 const base_url = process.env.BASE_URL;
 const deploymentName = process.env.DEPLOYMENT_NAME;
 
@@ -18,7 +18,7 @@ if (isCurrentEnvironmentAzure) {
     console.log('set url');
 } else {
     configuration = new Configuration({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     });
     openai = new OpenAIApi(configuration);
 }
@@ -27,7 +27,7 @@ export default async function (req, res) {
     if (isCurrentEnvironmentAzure) {
         try {
             // console.log(req.body.prompt);
-            const response = await fetch(url, {
+            const response = await fetch('https://api.openai.com/v1/engines/text-davinci-002/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export default async function (req, res) {
         const completion = await openai.createCompletion({
             model: "text-davinci-002",
             prompt: generatePrompt(req.body.prompt),
-            temperature: 0.6,
+            // temperature: 0.6,
             max_tokens: 1000,
         });
         res.status(200).json({ result: completion.data.choices[0].text });
@@ -65,11 +65,11 @@ function generatePrompt(prompt) {
         // console.log('attempting to set model?');
         return {
             'model': 'text-davinci-003',
-            'prompt': prompt,
+            'prompt': "give suggestion and question related to this particular topic" + prompt,
             'max_tokens': 1000,
             // other options here
         };
     } else {
-        return `${prompt}`;
+        return `${"give suggestion section and question section seprately related to this particular topic" + prompt}`;
     }
 }

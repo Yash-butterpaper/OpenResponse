@@ -23,14 +23,38 @@ export default function Dialogue () {
 
     // handling the returned data
     // all responses appear to start with a \n\n header, so split to a regex and ignore the first two instances
-    const responseParsed = response.split(/\r?\n/).map((line, index) => {
-        if (index > 1) return (
-            <p className={style["openresponse-text"]} 
-               key={index} >
-                {line}
-            </p>
-        )
-    })
+    let responseParsed;
+
+// Check if the response is already a string
+if (typeof response === "string") {
+  responseParsed = response.split(/\r?\n/).map((line, index) => {
+    if (index > 1) {
+      return (
+        <p className={style["openresponse-text"]} key={index}>
+          {line}
+        </p>
+      );
+    } else {
+      return null; // Skip the first two lines
+    }
+  });
+} else {
+  // Convert response to a string
+  const responseString = response.toString();
+
+  // Now, you can use the split method
+  responseParsed = responseString.split(/\r?\n/).map((line, index) => {
+    if (index > 1) {
+      return (
+        <p className={style["openresponse-text"]} key={index}>
+          {line}
+        </p>
+      );
+    } else {
+      return null; // Skip the first two lines
+    }
+  });
+}
 
     // activates an active state for OpenResponse Logo if the user has stopped tying for 6 seconds.
     // useEffect captures the state of the input and debounces the timer when the user enters a key within 6 seconds of the last one
